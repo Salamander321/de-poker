@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 
-#include "game_defs.hpp"
+#include "game_defs.h"
 
 // class to represent a card
 class Card
