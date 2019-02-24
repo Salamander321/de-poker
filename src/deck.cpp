@@ -1,4 +1,4 @@
-#include "deck.hpp"
+#include "deck.h"
 
 Deck::Deck()
 {

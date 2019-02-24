@@ -1,7 +1,7 @@
 #pragma once
 
-#include "card.hpp"
-#include "game_defs.hpp"
+#include "card.h"
+#include "game_defs.h"
 
 #include <iostream>
 #include <random>

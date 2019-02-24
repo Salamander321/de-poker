@@ -2,7 +2,7 @@
 // Created by tiwari-shaswat7
 //
 
-#include "card.hpp"
+#include "card.h"
 
 const std::string Card::suitString[SUITSIZE] = {"Spades", "Clubs", "Hearts", "Diamonds"};
 
