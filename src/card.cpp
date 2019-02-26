@@ -1,7 +1,3 @@
-//
-// Created by tiwari-shaswat7
-//
-
 #include "card.h"
 
 const std::string Card::suitString[SUITSIZE] = {"Spades", "Clubs", "Hearts", "Diamonds"};
@@ -10,5 +6,5 @@ const std::string Card::valueString[CARDVALUESIZE] = {"1", "2", "3", "4", "5", "
 
 void Card::display()
 {
-	std::cout << m_suit << ", " << m_value << std::endl;
+	std::cout << m_value << ", " << m_suit << std::endl;
 }

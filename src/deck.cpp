@@ -6,6 +6,12 @@ Deck::Deck()
     init();
 }
 
+Deck::~Deck()
+{
+	for (int i = 0; i < DECKSIZE; i++)
+		delete m_cards[i];
+}
+
 void Deck::init()
 {
     if(m_initialized) return;
@@ -91,10 +97,4 @@ void Deck::display()
 		if (i % CARDVALUESIZE == 0)
 			std::cout << std::endl;
 	}
-}
-
-Deck::~Deck()
-{
-	for (int i = 0; i < DECKSIZE; i++)
-		delete m_cards[i];
 }

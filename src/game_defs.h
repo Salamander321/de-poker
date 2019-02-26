@@ -1,7 +1,3 @@
-//
-// Created by tiwari-shaswat7
-//
-
 #pragma once
 
 // card.hpp
@@ -10,8 +6,8 @@
 
 //player.hpp
 #define GAME_START_CASH 10000
-#define GAME_START_BBLIND 100
-#define GAME_START_SBLIND 50
+#define GAME_START_BBLIND 120
+#define GAME_START_SBLIND 60
 #define HOLECARDSSIZE 2
 #define COMMUNITYCARDSSIZE 5
 #define FIVECARDHANDSIZE 5
@@ -22,3 +18,14 @@
 
 //deck.hpp
 #define DECKSIZE 52
+
+//board.hpp
+#define PLAYERSIZE 6
+#define GAME_RAISE_COUNT_LIMIT 3
+
+/*
+ * typedefs
+ *
+ */
+
+typedef unsigned int MONEY;

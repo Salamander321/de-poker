@@ -12,10 +12,9 @@ class Deck
 {
 private:
     Card *m_cards[DECKSIZE];
-    bool m_initialized;
+	bool m_initialized;
     int m_topCardIndex;
-
-    
+   
 public:
     Deck();
 
