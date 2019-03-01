@@ -1,5 +1,5 @@
 #include "player.h"
-
+#include "Network.h"
 Player::Player()
 {
 	m_hasFolded = false;
@@ -47,6 +47,14 @@ void Player::getHoleCards(Card*& card1, Card*& card2)
 {
 	card1 = m_holeCards[0];
 	card2 = m_holeCards[1];
+}
+
+void Player::getHoleCards(int suit[], int value[])
+{
+	for (int i = 0; i <HOLECARDSSIZE; i++){
+		suit[i] = m_holeCards[i]->getSuit();
+		value[i] = m_holeCards[i]->getValue();
+	}
 }
 
 MONEY Player::getCash()
@@ -130,8 +138,9 @@ MONEY Player::getRaise(MONEY current_bet)
 	MONEY raiseAmount;
 	do
 	{
-		std::cout << "Enter Raise Amount: $";
-		std::cin >> raiseAmount;
+		std::cout << "Raise Amount: $"<<Network::value1;
+		//std::cin >> raiseAmount;
+		raiseAmount=(MONEY) Network::value1;
 	} while (raiseAmount < 2 * current_bet);
 
 	return raiseAmount;
@@ -142,8 +151,9 @@ MONEY Player::getBet(MONEY current_bet = 0)
 	MONEY betAmount;
 	do
 	{
-		std::cout << "Enter Bet Amount: $";
-		std::cin >> betAmount;
+		std::cout << "Bet Amount: $"<<Network::value1;
+		//std::cin >> betAmount;
+		betAmount = (MONEY) Network::value1;
 	} while (betAmount < GAME_START_BBLIND);
 
 	return betAmount;

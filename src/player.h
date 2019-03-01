@@ -33,6 +33,7 @@ public:
 
 	void setHoleCards(Card *);
 	void getHoleCards(Card* &, Card* &);
+	void getHoleCards(int[], int[]);
 
 	MONEY getCash();
 	void addCash(MONEY);

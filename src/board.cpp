@@ -1,4 +1,5 @@
 #include "board.h"
+#include "Network.h"
 
 Board::Board()
 {
@@ -98,6 +99,15 @@ void Board::dealCards()
 			m_players[(m_smallBlindIndex + j) % m_playerCount]->setHoleCards(m_deck.popCard());
 		}
 	}
+	int suit[2],value[2];
+	for(int i = 0; i < m_players.size(); i++)
+	{
+		m_players[i]->getHoleCards(suit,value);
+		for(int j = 0;j < 2;j++)
+		{
+			Network::sendHolecards(i,suit[j],value[j]);
+		}
+	}
 }
 
 void Board::preFlopRound()
@@ -117,6 +127,11 @@ void Board::flopRound()
 	}
 	m_deck.getFlop(m_communityCards[0], m_communityCards[1], m_communityCards[2]);
 	displayFlop();
+	int value,suit;
+	for (int i = 0;i < 3; i++)
+	{
+		Network::sendCommunityCard(m_communityCards[i]->getSuit(),m_communityCards[i]->getValue());
+	}
 	bettingRound((m_dealerIndex + 1) % m_playerCount, GAME_START_BBLIND);
 	resetPlayerRoundBet();
 }
@@ -129,6 +144,7 @@ void Board::turnRound()
 	}
 
 	m_communityCards[3] = m_deck.getTurn();
+	Network::sendCommunityCard(m_communityCards[3]->getSuit(),m_communityCards[3]->getValue());
 	displayTurn();
 	bettingRound((m_dealerIndex + 1) % m_playerCount, GAME_START_BBLIND);
 	resetPlayerRoundBet();
@@ -142,6 +158,7 @@ void Board::riverRound()
 	}
 
 	m_communityCards[4] = m_deck.getRiver();
+	Network::sendCommunityCard(m_communityCards[4]->getSuit(),m_communityCards[4]->getValue());
 	displayRiver();
 	resetPlayerRoundBet();
 }
@@ -175,7 +192,9 @@ void Board::bettingRound(int actingPlayerIndex, MONEY currentBet)
 		int playerIndex = (actingPlayerIndex + i + temp_offset) % m_playerCount;
 		if (!(m_players[playerIndex]->hasFolded()))
 		{
-			Player::ACTION action = m_players[playerIndex]->getAction();
+			//Player::ACTION action = m_players[playerIndex]->getAction();
+			Player::ACTION action = Network::getAction(playerIndex);
+            std::cout<<"Action has been selected"<<playerIndex<<":" <<action<<std::endl;
 			MONEY raise;
 			MONEY bet;
 			
@@ -187,6 +206,7 @@ void Board::bettingRound(int actingPlayerIndex, MONEY currentBet)
 					m_pot += m_players[playerIndex]->call(currentBet);
 					break;
 				}
+				std::cout<<playerIndex<<" : "<<"RAISE"<<std::endl;
 				raise = m_players[playerIndex]->raise(m_players[playerIndex]->getRaise(currentBet));
 				m_pot += raise;
 				currentBet = raise;
@@ -195,6 +215,7 @@ void Board::bettingRound(int actingPlayerIndex, MONEY currentBet)
 				i = 0;
 				break;
 			case Player::BET:
+                std::cout<<playerIndex<<" : "<<"BET"<<std::endl;
 				bet = m_players[playerIndex]->bet(m_players[playerIndex]->getBet(currentBet));
 				m_pot += bet;
 				currentBet = bet;
@@ -202,12 +223,15 @@ void Board::bettingRound(int actingPlayerIndex, MONEY currentBet)
 				i = 0;
 				break;
 			case Player::CALL:
+                std::cout<<playerIndex<<" : "<<"CALL"<<std::endl;
 				m_pot += m_players[playerIndex]->call(currentBet);
 				break;
 			case Player::CHECK:
+                std::cout<<playerIndex<<" : "<<"CHECK"<<std::endl;
 				m_players[playerIndex]->check();
 				break;
 			case Player::FOLD:
+                std::cout<<playerIndex<<" : "<<"FOLD"<<std::endl;
 				m_players[playerIndex]->fold();
 				m_foldedCount++;
 				break;
@@ -263,6 +287,8 @@ MONEY Board::winPot()
 void Board::displayPot()
 {
 	std::cout << "POT: $" << m_pot << std::endl;
+	Network::sendPot(m_pot);
+
 }
 
 void Board::setWinner()
@@ -450,6 +476,7 @@ void Board::display()
 	{
 		if(!(m_players[i]->hasFolded()))
 			std::cout << m_players[i]->getRank() << std::endl;
+
 	}
 	for (int i = 0; i < m_playerCount; i++)
 	{	

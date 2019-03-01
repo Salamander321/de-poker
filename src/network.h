@@ -15,7 +15,7 @@
 using namespace std::literals::chrono_literals;
 
 sf::UdpSocket UdpNode, UdpHost;
-sf::TcpSocket TcpNode;
+sf::TcpSocket Tcp+;
 sf::TcpListener listener;
 std::string networkName;
 sf::Packet BroadCastMessgae;
@@ -291,6 +291,7 @@ public:
             }
         }
     }
+
 
 };
 
