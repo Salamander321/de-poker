@@ -5,6 +5,7 @@
 #include "Lobby.h"
 #include "gui_engine_defs.h"
 #include "Network.h"
+#include "game_state.h"
 
 Lobby::Lobby(GameDataRef data)
     :m_data(data)
@@ -50,6 +51,12 @@ void Lobby::Update(float dt)
 
 void Lobby::HandleInput()
 {
+    if(Network::GameStart)
+    {
+        // Switch to Game State
+        m_data->machine.addState(StateRef(new GameState(m_data)), true);
+
+    }
     sf::Event event;
 
     while (m_data->window.pollEvent(event)) {

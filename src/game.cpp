@@ -1,13 +1,15 @@
 #include "game.h"
-#include "Lobby.h"
+#include "splash_state.h"
 #include "asset_manager.h"
+
+bool Game::listenStart = false;
 
 Game::Game(int width, int height, std::string title)
 {
     m_data->window.create(sf::VideoMode(width, height), title,
     sf::Style::Close | sf::Style::Titlebar);
 
-    m_data->machine.addState(StateRef(new Lobby(m_data)));
+    m_data->machine.addState(StateRef(new SplashState(m_data)));
 
     Run();
 }

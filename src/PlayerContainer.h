@@ -22,14 +22,14 @@ class PlayerContainer {
 public:
     PlayerContainer();
     ~PlayerContainer();
+    cards m_holeCards[2];
+
     void setHoleCards(int suit, int value);
     void setCommunityCards(int suit, int value);
     void getHoleCards(cards []);
-
 private:
     int holecardIndex;
     int communityCardIndex;
-    cards m_holeCards[2];
     cards m_communityCards[5];
     int playerNo;
     cards m_winnerCards[5];
