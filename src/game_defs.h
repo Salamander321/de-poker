@@ -13,7 +13,6 @@
 #define FIVECARDHANDSIZE 5
 #define SEVENCARDHANDSIZE 7
 
-
 //poker.hpp
 #define PLAYER_COUNT 2
 
@@ -28,6 +27,7 @@
  * typedefs
  *
  */
+
 
 //Network.h
 #define BROADCASTLISTEN 9010

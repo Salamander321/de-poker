@@ -18,6 +18,7 @@ sf::SocketSelector Network::selector;
 bool Network::NetworkEngine = true;
 sf::TcpSocket Network::ServerConnect;
 std::map <sf::IpAddress,std::string> Network::clientsName;
+std::map <std::string,std::string> Network::peersName;
 std::vector <std::string> Network::peers;
 bool Network::receivedActionState[] = {false,false,false,false,false,false};
 int Network::action;
@@ -56,16 +57,17 @@ void Network::listenBroadcast() {
             if (rcvMsg == "POKER") {
                 if (ServerConnect.connect(hostAddress, HOSTCONNECT) == sf::Socket::Done) {
                     listening = false;
+                    rcvPkg.clear();
+                    rcvPkg << "Name" << MyName;
+                    if (ServerConnect.send(rcvPkg) == sf::Socket::Done) {
+                        std::cout << "Successfully send Name to server" << std::endl;
+                    }
                     std::cout << "Successfully Connected to Server" << std::endl;
                 }
             }
         }
     }
-    rcvPkg.clear();
-    rcvPkg << "Name" << MyName;
-    if (ServerConnect.send(rcvPkg) == sf::Socket::Done) {
-        std::cout << "Successfully send Name to server" << std::endl;
-    }
+
 }
 
 void Network::serverLoop() {
@@ -74,6 +76,7 @@ void Network::serverLoop() {
     sf::Packet serverPacket;
     selector.add(listener);
     std::string type;
+    std::string Name;
     int us_action,us_value1,us_value2,us_value3;
     bool running = true;
     while (running) {
@@ -86,6 +89,15 @@ void Network::serverLoop() {
                 if (listener.accept(*client) == sf::Socket::Done) {
                     std::cout << client->getRemoteAddress().toString() << "has been successfully connected."
                               << std::endl;
+                    if(client->receive(serverPacket) == sf::Socket::Done)
+                    {
+                        std::cout<<"successfully received Name"<<std::endl;
+                    }
+                    serverPacket>>type>>Name;
+                    if(type == "Name")
+                    {
+                        clientsName.insert(std::pair<sf::IpAddress,std::string>(client->getRemoteAddress(),Name));
+                    }
                     client->setBlocking(false);
                     clients.push_back(client);
                     selector.add(*client);
@@ -165,13 +177,14 @@ void Network::peerUpdate() {
     ServerConnect.setBlocking(false);
     bool running = true;
     sf::Packet receivePkg;
-    std::string type1,type2;
+    std::string type1,type2,type3;
     while(running){
         ServerConnect.receive(receivePkg);
-        receivePkg>>type1>>type2;
+        receivePkg>>type1>>type2>>type3;
         if (type1 == "P" && !findPeers(type2)){
-            std::cout<<type2<<std::endl;
+            std::cout<<type2<<type3<<std::endl;
             peers.push_back(type2);
+            peersName.insert(std::pair<std::string,std::string>(type2,type3));
         } else if (type2 == "G"){
             running = false;
         }
@@ -183,7 +196,7 @@ void Network::sendPeerDetail() {
     sf::Packet peerPkg;
     for(int j = 0; j< clients.size(); j++) {
         for (int i = 0; i < clients.size(); i++) {
-                peerPkg << "P" << clients[i]->getRemoteAddress().toString();
+                peerPkg << "P" << clients[i]->getRemoteAddress().toString()<<clientsName[clients[i]->getRemoteAddress()];
                 clients[j]->send(peerPkg);
                 peerPkg.clear();
         }

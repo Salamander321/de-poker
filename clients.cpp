@@ -3,10 +3,13 @@
 //
 #include "Network.h"
 #include "poker.h"
+#include "game.h"
+#include "gui_engine_defs.h"
+#include "asset_manager.h"
 #include <iostream>
 #include <thread>
 
-int main()
+void NetWorkThread()
 {
     Network Node("Client");
     std::cout<<"Waiting For Server To connect"<<std::endl;
@@ -15,8 +18,13 @@ int main()
     std::string msg;
     std::thread MainGame(Network::receiveGamedata);
     MainGame.join();
+}
+
+int main()
+{   std::thread Network(NetWorkThread);
+    Network.detach();
+    Game(SCREEN_WIDTH,SCREEN_HEIGHT,"Lobby");
 
 
     return 0;
-
 }

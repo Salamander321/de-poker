@@ -24,6 +24,7 @@ public:
     Network(const std::string&);
     static bool receivedActionState[];
     static std::vector <std::string> peers;
+    static std::map <std::string,std::string> peersName;
     static int action, value1, value2, value3;
     static bool NetworkEngine;
     static bool broadcasting;
