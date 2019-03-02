@@ -28,6 +28,9 @@ public:
     static int action, value1, value2, value3;
     static bool NetworkEngine;
     static bool broadcasting;
+    static std::string rcvType;
+    static bool receiveData;
+    static bool GameStart;
     static void MessageBroadcast();
     void listenBroadcast();
     static void serverLoop();
@@ -41,11 +44,15 @@ public:
     static void sendCommunityCard(int,int);
     static void sendRank(int,int);
     static void receiveGamedata();
-
+    static void sendPlayerAction(int, int);
+    static void sendBestCards(int,int);
+    static void sendWinners(std::string);
+    static void sendActionToServer(int,int);
     //May or May not Required
-    static void receiveData();
+    //static void receiveData();
     void sendData(std::string);
     static void sendPot(MONEY );
+
 
 
 

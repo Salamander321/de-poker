@@ -26,10 +26,11 @@ int main()
 
 	board.setWinner();
 	std::vector <Player *> winners = board.getWinner();
-
+	Network::sendWinners(winners[0]->getName());
 	for (size_t i = 0; i < winners.size(); i++)
 	{
 		std::cout << winners[i]->getName() << "   CASH: $" << winners[i]->getCash() << std::endl;
+		winners[i]->displayFiveCardHand();
 	}
 	board.displayPot();
 	std::cin.get();

@@ -195,6 +195,8 @@ void Board::bettingRound(int actingPlayerIndex, MONEY currentBet)
 			//Player::ACTION action = m_players[playerIndex]->getAction();
 			Player::ACTION action = Network::getAction(playerIndex);
             std::cout<<"Action has been selected"<<playerIndex<<":" <<action<<std::endl;
+            Network::sendPlayerAction(playerIndex,action);
+
 			MONEY raise;
 			MONEY bet;
 			
@@ -237,6 +239,7 @@ void Board::bettingRound(int actingPlayerIndex, MONEY currentBet)
 				break;
 			}
 		}
+
 	}
 }
 
@@ -474,8 +477,10 @@ void Board::display()
 	std::cout << "Rankings" << std::endl;
 	for (int i = 0; i < m_playerCount; i++)
 	{
-		if(!(m_players[i]->hasFolded()))
-			std::cout << m_players[i]->getRank() << std::endl;
+		if(!(m_players[i]->hasFolded())) {
+            std::cout << m_players[i]->getRank() << std::endl;
+            Network::sendRank(i,(int) m_players[i]->getRank());
+        }
 
 	}
 	for (int i = 0; i < m_playerCount; i++)

@@ -7,6 +7,6 @@ add_executable(DePoker server.cpp src/Menu.cpp src/windows.cpp src/Network.h src
         src/board.cpp src/card.h src/card.cpp src/chips.h src/deck.h src/deck.cpp src/game_defs.h src/hand.h
         src/hand.cpp src/player.h src/player.cpp src/poker.h src/player.cpp src/game.h src/game.cpp src/game_defs.h
         src/gui_engine_defs.h src/input_manager.h src/input_manager.cpp src/Lobby.h src/Lobby.cpp src/state.h
-        src/state_machine.h src/state_machine.cpp)
+        src/state_machine.h src/state_machine.cpp src/asset_manager.cpp src/asset_manager.h src/PlayerContainer.cpp src/PlayerContainer.h)
 include_directories(DePoker src)
 target_link_libraries(DePoker sfml-graphics sfml-window sfml-network sfml-system sfml-audio pthread)

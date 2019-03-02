@@ -8,7 +8,6 @@
 #include <SFML/Graphics.hpp>
 #include "state.h"
 #include "game.h"
-#include "asset_manager.h"
 
 class Lobby : public State
 {

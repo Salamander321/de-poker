@@ -205,4 +205,5 @@ void Player::display()
 void Player::displayFiveCardHand()
 {
 	m_hand.displayFiveCardHand();
+
 }

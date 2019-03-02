@@ -1,6 +1,6 @@
 #include "game.h"
 #include "Lobby.h"
-#include "asset_manager.cpp"
+#include "asset_manager.h"
 
 Game::Game(int width, int height, std::string title)
 {

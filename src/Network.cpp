@@ -7,7 +7,8 @@
 #include "player.h"
 #include <SFML/Network.hpp>
 #include <iostream>
-
+#include <thread>
+using namespace std::literals::chrono_literals;
 //Member Variable Definitions
 
 bool Network::broadcasting;
@@ -25,6 +26,10 @@ int Network::action;
 int Network::value1;
 int Network::value2;
 int Network::value3;
+std::string Network::rcvType;
+bool Network::receiveData;
+bool Network::GameStart = false;
+
 //MemberFunction Definition
 
 Network::Network(const std::string & name) {
@@ -41,6 +46,7 @@ void Network::MessageBroadcast()
     UdpBroadcast.setBlocking(false);
     while(broadcasting){
         UdpBroadcast.send(BroadcastPacket,sf::IpAddress::Broadcast,BROADCASTLISTEN);
+        std::this_thread::sleep_for(1s);
     }
 }
 
@@ -80,6 +86,7 @@ void Network::serverLoop() {
     int us_action,us_value1,us_value2,us_value3;
     bool running = true;
     while (running) {
+        std::this_thread::sleep_for(100ms);
 
         if (selector.wait())
         {
@@ -139,6 +146,7 @@ void Network::serverLoop() {
     }
 }
 
+/*
 void Network::receiveData()
 {
     std::string rcvMsg, rcvMSG;
@@ -152,7 +160,7 @@ void Network::receiveData()
         }
     }
 }
-
+*/
 
 void Network::sendData(std::string sendMsg)
 {
@@ -179,6 +187,7 @@ void Network::peerUpdate() {
     sf::Packet receivePkg;
     std::string type1,type2,type3;
     while(running){
+        std::this_thread::sleep_for(100ms);
         ServerConnect.receive(receivePkg);
         receivePkg>>type1>>type2>>type3;
         if (type1 == "P" && !findPeers(type2)){
@@ -187,6 +196,7 @@ void Network::peerUpdate() {
             peersName.insert(std::pair<std::string,std::string>(type2,type3));
         } else if (type2 == "G"){
             running = false;
+            GameStart = true;
         }
         receivePkg.clear();
     }
@@ -262,6 +272,32 @@ void Network::sendCommunityCard(int suit, int value)
         }
     }
 }
+void Network::sendBestCards(int suit, int value)
+{
+    sf::Packet bestPkg;
+    bestPkg<<"BSTPACK"<<113<<suit<<value<<113;
+    for (int i = 0; i < clients.size(); i++)
+    {
+        if(clients[i]->send(bestPkg) == sf::Socket::Done)
+        {
+            std::cout<<"BSTCARD to "<<clients[i]->getRemoteAddress().toString()<<std::endl;
+        }
+    }
+}
+
+void Network::sendWinners(std::string winnerName)
+{
+    sf::Packet winName;
+    winName<<winnerName<<114<<113<<113<<113;
+    for (int i = 0; i < clients.size(); i++)
+    {
+        if(clients[i]->send(winName) == sf::Socket::Done)
+        {
+            std::cout<<"Winners are send to "<<clients[i]->getRemoteAddress().toString()<<std::endl;
+        }
+    }
+}
+
 
 void Network::sendRank(int playerIndex, int Rank)
 {
@@ -284,15 +320,23 @@ void Network::receiveGamedata()
         {
             pkg>>type>>action>>value1>>value2>>value3;
             if(type == "POT")
-            {
+            {   rcvType = type;
+                Network::receiveData = true;
                 std::cout<<"POT Money is"<<value1<<std::endl;
+                while (receiveData);
             }
             else if(type == "HC")
-            {
+            {   rcvType = type;
+                Network::receiveData = true;
                 std::cout<<"Hole Card is "<<value1<<" : "<<value2<<std::endl;
+                while (receiveData);
             } else if(type =="GAT")
             {
-                int Raction, Rvalue;
+                //int Raction, Rvalue;
+                rcvType = type;
+                Network::receiveData = true;
+                while (receiveData);
+                /*
                 std::cout<<"Action Request has been Sent by server"<<std::endl;
                 std::cout<<"0.CAll 1.RAISE 2.FOLD 3.CHECK 4.BET"<<std::endl;
                 std::cin>>Raction;
@@ -303,11 +347,55 @@ void Network::receiveGamedata()
                 if(ServerConnect.send(pkg) == sf::Socket::Done){
                     std::cout<<"Action send successfully"<<std::endl;
                 }
+                 */
             } else if(type == "CMABC")
-            {
+            {   rcvType = type;
+                Network::receiveData = true;
+                while (receiveData);//value1 and value2
                 std::cout<<"Community Card got"<<std::endl;
                 std::cout<<value1<<" : "<<value2<<std::endl;
+            }
+            else if(action == 114)
+            {
+                rcvType = type; //WInner name is received in this
+                Network::receiveData = true;
+                while(receiveData);
+            }
+            else if(type == "RANK")
+            {   rcvType = type;
+                //Rank can be got by value1
+                Network::receiveData = true;
+                while (receiveData);
+            } else if(type == "BSTPACK")
+            {   rcvType = type;
+                Network::receiveData = true;
+                while (receiveData);
+                //Suit = Value1 and Value = Value2
+            } else if (type == "PGAT")
+            {   rcvType = type;
+                Network::receiveData = true;
+                while (receiveData);
             }
         }
     }
 }
+
+void Network::sendActionToServer(int Action, int Value)
+{
+    sf::Packet pkg;
+    pkg<<"GAT"<<Action<<Value;
+    ServerConnect.send(pkg);
+}
+void Network::sendPlayerAction(int PlayerIndex, int Action)
+{
+    sf::Packet actionPkg;
+    actionPkg<<"PGAT"<<113<<PlayerIndex<<Action;
+    for (int i = 0; i < clients.size(); i++)
+    {
+        if (i != PlayerIndex)
+        {
+            clients[i]->send(actionPkg);
+        }
+    }
+}
+

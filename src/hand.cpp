@@ -1,4 +1,5 @@
 #include "hand.h"
+#include "Network.h"
 
 void Hand::setSevenCardHand(Card *hCard[HOLECARDSSIZE], Card *comCard[COMMUNITYCARDSSIZE])
 {
@@ -312,10 +313,13 @@ Card* Hand::getFiveCardHand(int index)
 
 void Hand::displayFiveCardHand()
 {
+	int suit, value;
 	std::cout << "----------------" << std::endl;
 	for (int i = 0; i < FIVECARDHANDSIZE; i++)
 	{
 		m_fiveCardHand[i]->display();
+		suit = m_fiveCardHand[i]->getSuit();
+		value = m_fiveCardHand[i]->getSuit();
 	}
 	std::cout << std::endl;
 }
