@@ -22,6 +22,7 @@
 #define GAME_CHIPS_FILEPATH "../assets/res/chips.png"
 #define GAME_CARD_PATH "../assets/res/cards/"
 #define GAME_PLAYER_AVATAR_FILEPATH "../assets/res/players/"
+#define GAME_WINNER_FILEPATH "../assets/res/winner.png"
 
 #define GAME_ACTION_BUTTON_COUNT 3
 #define GAME_PLAYER_SIZE 6

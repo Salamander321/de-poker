@@ -27,6 +27,10 @@ private:
     PlayerContainer m_playerContainer;
     bool receivedHC;
     bool myTurn;
+    bool commCard;
+    bool turnCard;
+    bool riverCard;
+    bool displayWinner;
 
     // Background and Table
     sf::Sprite m_background;
@@ -49,6 +53,11 @@ private:
 
     // Card Back View Small
     sf::Sprite m_cardBack[GAME_PLAYER_SIZE * 2];
+
+    // Community Cards
+    cards m_communityCards[5];
+    int middlecardposx[5];
+
 
     // Card Distribute
     float posx[12];
@@ -84,6 +93,11 @@ private:
         } InfoBox; 
     }; 
     Players m_Players[GAME_PLAYER_SIZE];
+
+   /* struct
+    {
+        std::string name;
+    };*/
 
     // Display Card Front
     void setCardFront(Card::SUIT, Card::VALUE, int, int, bool);
@@ -134,6 +148,11 @@ private:
 
     // To String
     std::string intoString(Player::ACTION action);
+
+    // set community card pos, ....
+    void setCommunityCard();
+    void setTurn();
+    void setRiver();
 
     // Card Distribute
     void cardDistribute();

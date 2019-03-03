@@ -11,6 +11,10 @@ GameState::GameState(GameDataRef data)
 {
     receivedHC = false;
     myTurn = false;
+    commCard = false;
+    turnCard = false;
+    riverCard = false;
+    displayWinner = false;
 }
 
 void GameState::Init()
@@ -207,6 +211,10 @@ void GameState::Init()
     m_cardBack[6].setRotation(-20);
     m_cardBack[7].setPosition(180, 170);
     m_cardBack[7].setRotation(-20);
+
+    // For community cards
+    for(int i=0;i<4;i++)
+        middlecardposx[i]=50;
 }
 
 void GameState::HandleInput()
@@ -366,7 +374,27 @@ void GameState::Update(float dt)
              * This is for community card so will be send in continous three way. Packet loss is possible
              * Suit and Value Format
              */
-            std::cout<<Network::value1<<" : "<<Network::value2<<std::endl;
+            static int comCardIndex = 0;
+            m_communityCards[comCardIndex].suit = Network::value1;
+            m_communityCards[comCardIndex].value = Network::value2;
+            if(comCardIndex == 2)
+            {
+                commCard = true;
+            }
+            if(comCardIndex == 3)
+            {
+                turnCard = true;
+            }
+            if(comCardIndex == 4)
+            {
+                riverCard = true;
+            }
+            comCardIndex++;
+
+
+
+            //std::cout<<Network::value1<<" : "<<Network::value2<<std::endl;
+
             Network::receiveData = false;
         } else if(Network::action == 114)
         {
@@ -392,8 +420,8 @@ void GameState::Update(float dt)
             {
                 if(m_Players[i].serverIndex == Network::value1)
                 {
-                    m_Players[i].InfoBox.avatarOutline.setOutlineColor(COLOR_YELLOW_ACTIVE);
-                    m_Players[(Network::peers.size() + i - 1) % Network::peers.size()].InfoBox.avatarOutline.setOutlineColor(COLOR_GREY_TRANSPARENT);
+                    m_Players[(Network::peers.size() + i - 1) % Network::peers.size()].InfoBox.avatarOutline.setOutlineColor(COLOR_YELLOW_ACTIVE);
+                    m_Players[i].InfoBox.avatarOutline.setOutlineColor(COLOR_GREY_TRANSPARENT);
 
                     m_Players[i].lastAction = (Player::ACTION) Network::value2;
                     m_Players[i].lastActionText.setString(intoString(m_Players[i].lastAction));
@@ -407,9 +435,21 @@ void GameState::Update(float dt)
         }
     }
 
+    if(commCard)
+    {
+        setCommunityCard();
+    }
+    if(turnCard)
+    {
+        setTurn();
+    }
+    if(riverCard)
+    {
+        setRiver();
+    }
     cardDistribute();
-    m_potText.setString("POT   $" + std::to_string(potMoney));
-    pot(potMoney, 325, 248);
+    m_potText.setString("POT  $" + std::to_string(potMoney));
+    pot(potMoney, 335, 248);
 
 }
 
@@ -461,6 +501,23 @@ void GameState::Draw(float dt)
 
     }
 
+    if(commCard)
+    {
+        for (int i = 0; i < 3; i++)
+            m_data->window.draw(m_cardFront[m_communityCards[i].suit][m_communityCards[i].value]);
+    }
+
+    if(turnCard)
+    {
+        m_data->window.draw(m_cardFront[m_communityCards[3].suit][m_communityCards[3].value]);
+    }
+
+    if(riverCard)
+    {
+        m_data->window.draw(m_cardFront[m_communityCards[4].suit][m_communityCards[4].value]);
+    }
+
+
     m_data->window.display();
 }
 
@@ -503,6 +560,83 @@ std::string GameState::intoString(Player::ACTION action)
             return " ";
     }
 }
+
+// Community Card
+void GameState::setCommunityCard() {
+    static int bc = 0;
+    if (middlecardposx[0] <= 322) {
+        setCardFront((Card::SUIT)m_communityCards[0].suit, (Card::VALUE)m_communityCards[0].value, middlecardposx[0], 287.0f);
+        middlecardposx[0] += 3;
+        bc++;
+
+        if (middlecardposx[0] >= 322) {
+            setCardFront((Card::SUIT)m_communityCards[0].suit, (Card::VALUE)m_communityCards[0].value, 323, 287.0f);
+            //m_cardFront[m_communityCards[0].suit][m_communityCards[0].value].setPosition(323, 287.0f);
+            // m_cardFront[suit1][value1].setFillColor(sf::Color(255,255,255,255));
+
+        }
+    }
+    if (middlecardposx[1] <= 385 && bc > 30) {
+        setCardFront((Card::SUIT)m_communityCards[1].suit, (Card::VALUE)m_communityCards[1].value, middlecardposx[1], 287.0f);
+
+        middlecardposx[1] += 3;
+        bc++;
+
+        if (middlecardposx[1] >= 385) {
+            setCardFront((Card::SUIT)m_communityCards[1].suit, (Card::VALUE)m_communityCards[1].value, 386, 287.0f);
+
+            //m_cardFront[m_communityCards[1].suit][m_communityCards[1].value].setPosition(386, 287.0f);
+        }
+    }
+
+    if (middlecardposx[2] <= 448 && bc > 100) {
+        setCardFront((Card::SUIT)m_communityCards[2].suit, (Card::VALUE)m_communityCards[2].value, middlecardposx[2], 287.0f);
+
+        middlecardposx[2] += 3;
+        bc++;
+
+
+        if (middlecardposx[2] >= 448) {
+            setCardFront((Card::SUIT)m_communityCards[2].suit, (Card::VALUE)m_communityCards[2].value, 448, 287.0f);
+
+            //m_cardFront[m_communityCards[1].suit][m_communityCards[1].value].setPosition(448, 287.0f);
+        }
+    }
+}
+
+void GameState::setTurn()
+{
+
+    if(middlecardposx[3]<=511)// && bc >180){
+        setCardFront((Card::SUIT)m_communityCards[3].suit, (Card::VALUE)m_communityCards[3].value, middlecardposx[3], 287.0f);
+        //m_cardFront[suit4][value4].setPosition(middlecardposx[3],287.0f);
+        middlecardposx[3]+=3;
+        //bc++;
+
+
+        if(middlecardposx[3]>=511) {
+            setCardFront((Card::SUIT)m_communityCards[3].suit, (Card::VALUE)m_communityCards[3].value, 511, 287.0f);
+            //arrangedcards[suit5][value5].setPosition(511,287.0f);
+        }
+}
+
+
+void GameState::setRiver()
+{
+
+    if(middlecardposx[4]<=574)// && bc >180){
+        setCardFront((Card::SUIT)m_communityCards[4].suit, (Card::VALUE)m_communityCards[4].value, middlecardposx[4], 287.0f);
+    //m_cardFront[suit4][value4].setPosition(middlecardposx[3],287.0f);
+    middlecardposx[4]+=3;
+    //bc++;
+
+
+    if(middlecardposx[4]>=574) {
+        setCardFront((Card::SUIT)m_communityCards[4].suit, (Card::VALUE)m_communityCards[4].value, 574, 287.0f);
+        //arrangedcards[suit5][value5].setPosition(511,287.0f);
+    }
+}
+
 
 // Card Distribute Function
 void GameState::cardDistribute() 
