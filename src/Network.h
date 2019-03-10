@@ -44,7 +44,7 @@ public:
     static void sendCommunityCard(int,int);
     static void sendRank(int,int);
     static void receiveGamedata();
-    static void sendPlayerAction(int, int);
+    static void sendPlayerAction(int, int, int);
     static void sendBestCards(int,int);
     static void sendWinners(std::string);
     static void sendActionToServer(int,int);

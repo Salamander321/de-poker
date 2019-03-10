@@ -386,16 +386,19 @@ void Network::sendActionToServer(int Action, int Value)
     pkg<<"GAT"<<Action<<Value;
     ServerConnect.send(pkg);
 }
-void Network::sendPlayerAction(int PlayerIndex, int Action)
+void Network::sendPlayerAction(int PlayerIndex, int Action, int Value)
 {
     sf::Packet actionPkg;
-    actionPkg<<"PGAT"<<113<<PlayerIndex<<Action;
+    actionPkg<<"PGAT"<<113<<PlayerIndex<<Action<<Value;
     for (int i = 0; i < clients.size(); i++)
     {
+        /*
         if (i != PlayerIndex)
         {
             clients[i]->send(actionPkg);
         }
+         */
+        clients[i]->send(actionPkg);
     }
 }
 
